@@ -1,0 +1,54 @@
+{
+  "name": "viz",
+  "version": "0.0.0",
+  "description": "Visual regression testing framework",
+  "license": "MIT",
+  "repository": "steve-taylor/viz",
+  "keywords": [
+    "visual",
+    "regression",
+    "puppeteer",
+    "react",
+    "angular",
+    "vue",
+    "svelte",
+    "jquery",
+    "html",
+    "css",
+    "javascript"
+  ],
+  "main": "src/server/index.js",
+  "bin": "src/server/index.js",
+  "scripts": {
+    "clean": "echo 'CLEAN' && rimraf ./bin/viz.js tmp reports",
+    "mkdirs": "echo 'MKDIRS' && mkdirp tmp",
+    "build": "npm run -s clean && npm run -s mkdirs && echo 'BUILD' && browserify -t [ babelify --presets [ @babel/preset-env ] ] -t [ envify --NODE_ENV production ] ./src/browser/index.js -o bin/viz.js",
+    "watch": "npm run -s clean && npm run -s mkdirs && echo 'WATCH' && watchify -t [ babelify --presets [ @babel/preset-env ] ] -t [ envify --NODE_ENV development ] ./src/browser/index.js -o bin/viz.js",
+    "postinstall": "npm run build"
+  },
+  "dependencies": {
+    "@babel/core": "^7.6.4",
+    "babelify": "^10.0.0",
+    "browserify": "^16.5.0",
+    "core-js": "^3.3.2",
+    "envify": "^4.1.0",
+    "img-diff-js": "^0.4.1",
+    "junit-report-builder": "^1.3.3",
+    "lodash": "^4.17.15",
+    "log4js": "^5.2.2",
+    "minimist": "^1.2.0",
+    "mkdirp": "^0.5.1",
+    "npm-run-all": "^4.1.5",
+    "portfinder": "^1.0.25",
+    "puppeteer-core": "^1.20.0",
+    "recursive-readdir": "^2.2.2",
+    "regenerator-runtime": "^0.13.3",
+    "rimraf": "^3.0.0",
+    "serve-handler": "^6.1.2"
+  },
+  "devDependencies": {
+    "@babel/preset-env": "^7.6.3",
+    "fs-extra": "^8.1.0",
+    "watchify": "^3.11.1"
+  }
+}
