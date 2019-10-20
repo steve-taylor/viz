@@ -1,0 +1,31 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Viz</title>
+    <script src="./viz.js"></script>
+    <style>
+        /* Disable animations and transitions for reproducible tests */
+        *, *::after, *::before, *::first-letter, *::first-line, *::selection, *::placeholder {
+            transition: none !important;
+            animation: none !important;
+            -webkit-animation: none !important;
+        }
+
+        body {
+            background-color: #d2b4de;
+            background-image: linear-gradient(45deg, #85c1e9 25%, transparent 25%),
+                              linear-gradient(-45deg, #85c1e9 25%, transparent 25%),
+                              linear-gradient(45deg, transparent 75%, #85c1e9 75%),
+                              linear-gradient(-45deg, transparent 75%, #85c1e9 75%);
+            background-size: 20px 20px;
+            background-position: 0 0, 0 10px, 10px -10px, -10px 0;
+            padding: 10px 0;
+        }
+    </style>
+</head>
+<body>
+    <div id="vizTargetRoot"></div>
+    <script src="../tmp/viz-tests.js"></script>
+</body>
+</html>
