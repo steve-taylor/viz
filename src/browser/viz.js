@@ -78,8 +78,6 @@ export default class Viz {
                 screenshotTarget = await testRunner(target);
             } catch (e) {
                 console.error(`Error running test ${suiteName}/${testName}`, e);
-            } finally {
-                await testFinalizer(target);
             }
 
             if (!screenshotTarget) {
@@ -90,6 +88,12 @@ export default class Viz {
                 targetRect: (screenshotTarget || target).getBoundingClientRect(),
                 screenshotOutputPath,
             });
+
+            try {
+                await testFinalizer(target);
+            } catch (e) {
+                console.error(`Error calling afterEach for test ${suiteName}/${testName}`, e);
+            }
 
             vizTargetRoot.removeChild(target);
 
