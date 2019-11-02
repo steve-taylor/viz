@@ -1,6 +1,6 @@
 {
   "name": "viz",
-  "version": "1.0.1",
+  "version": "1.1.0",
   "description": "Visual regression testing framework",
   "license": "MIT",
   "repository": "steve-taylor/viz",
