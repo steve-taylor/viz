@@ -29,13 +29,13 @@ const tryIncrementally = (thingToTry, incrementDuration, maxDuration) => {
     return fullPromise;
 };
 
-module.exports = async function setupPuppeteer(config) {
-    const {
-        chromeExecutablePath,
-        concurrentLimit,
-        testRunnerHtml,
-    } = config;
-
+module.exports = async function setupPuppeteer({
+    chromeExecutablePath,
+    chromeArgs,
+    timezone,
+    concurrentLimit,
+    testRunnerHtml,
+}) {
     logger.info(`Attempting to set up Puppeteer with ${concurrentLimit} pages...`);
 
     const port = await portfinder.getPortPromise({port: 9009});
@@ -49,11 +49,21 @@ module.exports = async function setupPuppeteer(config) {
     await new Promise((resolve) => void server.listen(port, resolve));
 
     const puppeteerOptions = {
-        args: ['--no-sandbox', '--disable-setuid-sandbox'],
+        args: [
+            '--no-sandbox',
+            '--disable-setuid-sandbox',
+            ...chromeArgs,
+        ],
         executablePath: chromeExecutablePath || execSync('which google-chrome-beta')
             .toString()
             .replace('\n', ''),
     };
+
+    if (timezone) {
+        puppeteerOptions.env = {
+            TZ: timezone,
+        };
+    }
 
     const browsers = await Promise.all(times(Math.max(1, concurrentLimit), () => puppeteer.launch(puppeteerOptions)));
     const pages = await Promise.all(browsers.map((browser) => browser.newPage()));

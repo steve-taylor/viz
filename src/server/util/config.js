@@ -5,6 +5,8 @@ const logger = require('./logger');
 
 const DEFAULT_CONFIG = {
     chromeExecutablePath: null,
+    chromeArgs: [],
+    timezone: null,
     concurrentLimit: 1,
     defaultViewportWidth: 1024,
     defaultViewportHeight: 1080,

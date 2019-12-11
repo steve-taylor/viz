@@ -134,6 +134,8 @@ Valid configuration options are as follows:
 | Option                  | Description                                                      | Default                              |
 |-------------------------|------------------------------------------------------------------|--------------------------------------|
 | `chromeExecutablePath`  | Path to your Chrome executable                                   | Result of `which google-chrome-beta` |
+| `chromeArgs`            | Command line arguments to pass to Chrome                         | []                                   |
+| `timezone`              | Timezone to use in Chrome                                        |                                      |
 | `concurrentLimit`       | Number of browsers to run in parallel                            | `1`                                  |
 | `defaultViewportWidth`  | Default viewport width in pixels                                 | `1024`                               |
 | `defaultViewportHeight` | Default viewport height in pixels                                | `1080`                               |
