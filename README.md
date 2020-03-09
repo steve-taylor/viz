@@ -34,7 +34,7 @@ describe('my-component', () => {
     });
 
     test('basic', async (target) => {
-        // Asynchronously render inside the target DOM node 
+        // Asynchronously render inside the target DOM node
         await new Promise((resolve) => {
             ReactDOM.render(
                 <MyComponent />,
@@ -93,7 +93,7 @@ production.
     viz make-golden  - Make golden screenshots from each of the test cases
              --missing                  - Only take golden screenshots that don't yet exist
              --suite SUITE-1 SUITE-2    - Run specific suites
-             --skip-compile             - Don't compile the tests 
+             --skip-compile             - Don't compile the tests
     viz test         - Make screenshots and test them against the golden screenshots
 ```
 
@@ -145,6 +145,14 @@ Valid configuration options are as follows:
 | `tmpDir`                | Optional custom directory to store temporary files               |                                      |
 | `threshold`             | Image matching threshold from 0 to 1 (smaller is more sensitive) | `0`                                  |
 | `includeAA`             | Whether to disable detecting and ignoring anti-aliased pixels    | `false`                              |
+
+## Additional features
+
+### Padding around screenshots
+
+To add padding to a screenshot, wrap the target element in an element with
+padding. The screenshot will automatically inherit the parent element's
+padding without having to fill it horizontally.
 
 ## Roadmap
 
