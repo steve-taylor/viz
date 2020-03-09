@@ -84,8 +84,32 @@ export default class Viz {
                 throw new Error(`No screenshot target returned from test ${suiteName}/${testName}. Did you forget to 'return'?`);
             }
 
+            let targetRect = screenshotTarget.getBoundingClientRect();
+
+            // If the screenshot target has a parent, add the parent's padding to the clipping rectangle.
+            if (screenshotTarget.parentElement && screenshotTarget.parentElement !== target) {
+                const {
+                    paddingTop,
+                    paddingRight,
+                    paddingBottom,
+                    paddingLeft,
+                } = window.getComputedStyle(screenshotTarget.parentElement);
+
+                const paddingTopPx = parseInt(paddingTop.replace('px', '')) || 0;
+                const paddingRightPx = parseInt(paddingRight.replace('px', '') || 0);
+                const paddingBottomPx = parseInt(paddingBottom.replace('px', '') || 0);
+                const paddingLeftPx = parseInt(paddingLeft.replace('px', '') || 0);
+
+                targetRect = {
+                    x: targetRect.x - paddingLeftPx,
+                    y: targetRect.y - paddingTopPx,
+                    width: targetRect.width + paddingLeftPx + paddingRightPx,
+                    height: targetRect.height + paddingTopPx + paddingBottomPx,
+                };
+            }
+
             await window.takeScreenshot({
-                targetRect: (screenshotTarget || target).getBoundingClientRect(),
+                targetRect,
                 screenshotOutputPath,
             });
 
