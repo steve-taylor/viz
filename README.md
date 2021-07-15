@@ -119,6 +119,17 @@ individually in a browser.
 
 Viz will render your test and, from there, you can inspect it.
 
+## Babel support
+
+Viz compiles your tests using Babel. As long as your package has a local
+`.babelrc` and the required presets and plugins, Viz should be able to build
+your tests.
+
+## TypeScript support
+
+Although viz source is JavaScript, it supports TypeScript via Babel (see above)
+and comes with type definitions.
+
 ## Configuration
 
 Viz can be configured via the first of the following files found in your

@@ -19,6 +19,7 @@
   ],
   "main": "src/server/index.js",
   "bin": "src/server/index.js",
+  "types": "src/index.d.ts",
   "scripts": {
     "clean": "echo 'CLEAN' && rimraf ./bin/viz.js tmp reports",
     "mkdirs": "echo 'MKDIRS' && mkdirp tmp",
