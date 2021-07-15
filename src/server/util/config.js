@@ -11,7 +11,7 @@ const DEFAULT_CONFIG = {
     outputPath: path.join(process.cwd(), 'tmp'),
     testReportOutputDir: path.join(process.cwd(), 'tmp', 'report'),
     testFilePath: process.cwd(),
-    testFilePattern: ['.viz.js', '.viz.ts'],
+    testFilePattern: ['.viz.js', '.viz.jsx', '.viz.tsx'],
     testRunnerHtml: null,
     tmpDir: path.join(__dirname, '..', '..', '..', 'tmp'),
     threshold: 0,

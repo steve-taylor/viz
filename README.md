@@ -150,20 +150,20 @@ project's root:
 
 Valid configuration options are as follows:
 
-| Option                  | Description                                                      | Default                              |
-|-------------------------|------------------------------------------------------------------|--------------------------------------|
-| `chromeExecutablePath`  | Path to your Chrome executable                                   | Result of `which google-chrome-beta` |
-| `concurrentLimit`       | Number of browsers to run in parallel                            | `1`                                  |
-| `defaultViewportWidth`  | Default viewport width in pixels                                 | `1024`                               |
-| `defaultViewportHeight` | Default viewport height in pixels                                | `1080`                               |
-| `outputPath`            | Output path for screenshots                                      | `tmp`                                |
-| `testReportOutputDir`   | Path for test reports                                            | `tmp/report`                         |
-| `testFilePath`          | Path to search for test files                                    | Current working directory            |
-| `testFilePattern`       | File extension (or array of file extensions) of test files       | `[".viz.js", ".viz.ts"]`             |
-| `testRunnerHtml`        | Optional custom HTML page in which tests should be executed      |                                      |
-| `tmpDir`                | Optional custom directory to store temporary files               |                                      |
-| `threshold`             | Image matching threshold from 0 to 1 (smaller is more sensitive) | `0`                                  |
-| `includeAA`             | Whether to disable detecting and ignoring anti-aliased pixels    | `false`                              |
+| Option                  | Description                                                      | Default                               |
+|-------------------------|------------------------------------------------------------------|---------------------------------------|
+| `chromeExecutablePath`  | Path to your Chrome executable                                   | Result of `which google-chrome-beta`  |
+| `concurrentLimit`       | Number of browsers to run in parallel                            | `1`                                   |
+| `defaultViewportWidth`  | Default viewport width in pixels                                 | `1024`                                |
+| `defaultViewportHeight` | Default viewport height in pixels                                | `1080`                                |
+| `outputPath`            | Output path for screenshots                                      | `tmp`                                 |
+| `testReportOutputDir`   | Path for test reports                                            | `tmp/report`                          |
+| `testFilePath`          | Path to search for test files                                    | Current working directory             |
+| `testFilePattern`       | File extension (or array of file extensions) of test files       | `[".viz.js", ".viz.jsx", ".viz.tsx"]` |
+| `testRunnerHtml`        | Optional custom HTML page in which tests should be executed      |                                       |
+| `tmpDir`                | Optional custom directory to store temporary files               |                                       |
+| `threshold`             | Image matching threshold from 0 to 1 (smaller is more sensitive) | `0`                                   |
+| `includeAA`             | Whether to disable detecting and ignoring anti-aliased pixels    | `false`                               |
 
 ## Additional features
 
