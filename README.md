@@ -130,6 +130,14 @@ your tests.
 Although viz source is JavaScript, it supports TypeScript via Babel (see above)
 and comes with type definitions.
 
+TypeScript support requires viz to be explicitly imported, i.e.
+
+```tsx
+// my-component.viz.ts
+
+import {describe, beforeEach, afterEach, test} from 'viz'
+```
+
 ## Configuration
 
 Viz can be configured via the first of the following files found in your
@@ -151,7 +159,7 @@ Valid configuration options are as follows:
 | `outputPath`            | Output path for screenshots                                      | `tmp`                                |
 | `testReportOutputDir`   | Path for test reports                                            | `tmp/report`                         |
 | `testFilePath`          | Path to search for test files                                    | Current working directory            |
-| `testFilePattern`       | File extension for test files                                    | `.viz.js`                            |
+| `testFilePattern`       | File extension (or array of file extensions) of test files       | `[".viz.js", ".viz.ts"]`             |
 | `testRunnerHtml`        | Optional custom HTML page in which tests should be executed      |                                      |
 | `tmpDir`                | Optional custom directory to store temporary files               |                                      |
 | `threshold`             | Image matching threshold from 0 to 1 (smaller is more sensitive) | `0`                                  |

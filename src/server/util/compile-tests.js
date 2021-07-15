@@ -17,7 +17,7 @@ module.exports = async function compileTests({
     logger.info('Compiling tests...');
 
     const testFilePaths = await recursive(testFilePath, [
-        (file, stats) => !(stats.isDirectory() || file.endsWith(testFilePattern)),
+        (file, stats) => !(stats.isDirectory() || filenameMatchesPattern(file, testFilePattern)),
     ]);
     const bundleOutfilePath = path.join(tmpDir, `${BUNDLE_NAME}.js`);
 
@@ -50,3 +50,9 @@ module.exports = async function compileTests({
 
     logger.info('Compilation complete');
 };
+
+function filenameMatchesPattern(filename, testFilePattern) {
+    return Array.isArray(testFilePattern)
+        ? testFilePattern.some(pattern => filename.endsWith(pattern))
+        : filename.endsWith(testFilePattern)
+}
