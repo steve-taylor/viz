@@ -30,7 +30,13 @@ module.exports = async function compileTests({
         const writeablePipeline = browserify(testFilePaths, {
             standalone: BUNDLE_NAME,
         })
-            .transform('babelify')
+            .transform('babelify', {
+                presets: [
+                    '@babel/preset-env',
+                    '@babel/preset-react',
+                    '@babel/preset-typescript',
+                ]
+            })
             .transform(envify({NODE_ENV: process.env.NODE_ENV || 'development'}))
             .bundle()
             .pipe(fs.createWriteStream(bundleOutfilePath));
