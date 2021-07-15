@@ -130,12 +130,56 @@ your tests.
 Although viz source is JavaScript, it supports TypeScript via Babel (see above)
 and comes with type definitions.
 
-TypeScript support requires viz to be explicitly imported, i.e.
+TypeScript support requires viz to be explicitly imported, e.g.
 
 ```tsx
 // my-component.viz.ts
-
+import {render, unmountComponentAtNode} from 'react-dom'
 import {describe, beforeEach, afterEach, test} from 'viz'
+
+import MyComponent from './MyComponent'
+
+describe('my-component', () => {
+    beforeEach(async () => {
+        // Setup before each my-component test...
+    })
+
+    afterEach(async target => {
+        // Clean up after each my-component test
+        unmountComponentAtNode(target)
+    })
+
+    test('basic', async target => {
+        // Asynchronously render inside the target DOM node
+        await new Promise<void>(resolve => {
+            ReactDOM.render(
+                <MyComponent />,
+                target,
+                resolve
+            )
+        })
+
+        // Return the DOM node for Viz to screenshot
+        return target.firstChild;
+    })
+
+    test('disabled', async (target) => {
+        await new Promise((resolve) => {
+            ReactDOM.render(
+                <MyComponent disabled/>,
+                target,
+                resolve
+            );
+        });
+
+        // Return the DOM node for Viz to screenshot
+        return target.firstChild;
+
+        // Override the screenshot viewports specified in describe()
+    }, [[320, 568], [1024, 768]]);
+
+    // Optional screenshot viewports [width, height] (defaults to [1280, 1024])
+}, [[320, 568], [768, 1024], [1024, 768], [1280, 768]]);
 ```
 
 ## Configuration
