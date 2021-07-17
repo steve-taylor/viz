@@ -3,7 +3,7 @@ const args = require('minimist')(process.argv.slice(2));
 
 const printHelp = require('./scripts/help');
 const getConfig = require('./util/config');
-const makeGolden = require('./scripts/make-golden');
+const takeBaselineScreenshots = require('./scripts/take-baseline-screenshots');
 const test = require('./scripts/test');
 const compileTests = require('./util/compile-tests');
 const logger = require('./util/logger');
@@ -18,8 +18,8 @@ async function main() {
     }
 
     switch (args._[0]) {
-        case 'make-golden':
-            await makeGolden({
+        case 'baseline':
+            await takeBaselineScreenshots({
                 config: await getConfig(),
                 shouldReplaceMissingOnly: !!args.missing,
                 skipCompile: !!args['skip-compile'],

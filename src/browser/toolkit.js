@@ -8,8 +8,8 @@ export function _setup() {
         puppeteerClick: (selector) => document.querySelector(selector).click(),
     });
 
-    if (!window._getTests().length) {
-        window._registerTests();
+    if (!window.viz._getTests().length) {
+        window.viz._registerTests();
     }
 
     // Clear the target root
@@ -23,11 +23,11 @@ export function _setup() {
 export async function runTest(suiteName, testName) {
     _setup();
 
-    const allTests = window._getTests();
+    const allTests = window.viz._getTests();
     const test = allTests.find((test) => test.suiteName === suiteName && test.testName === testName);
 
     if (!test) {
-        console.warn(`No such test: ${suiteName}/${testName}. Run window._getTests() to see what's available.`);
+        console.warn(`No such test: ${suiteName}/${testName}. Run window.viz._getTests() to see what's available.`);
 
         return;
     }

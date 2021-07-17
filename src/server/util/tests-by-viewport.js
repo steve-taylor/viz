@@ -31,12 +31,12 @@ module.exports = async function getTestsByViewport({
     const defaultViewports = [[defaultViewportWidth, defaultViewportHeight]];
 
     // Register the tests for all the pages we have
-    await Promise.all(pages.map((page) => page.evaluate(() => window._registerTests())));
+    await Promise.all(pages.map((page) => page.evaluate(() => window.viz._registerTests())));
 
     // The tests are the same across all the pages so we only bother checking page 1 for this
     const [firstPage] = pages;
-    const suites = await firstPage.evaluate(() => window._getSuites());
-    const tests = await firstPage.evaluate(() => window._getTests());
+    const suites = await firstPage.evaluate(() => window.viz._getSuites());
+    const tests = await firstPage.evaluate(() => window.viz._getTests());
 
     const suiteViewports = suites.reduce((curr, {suiteName, suiteViewports}) => ({
         ...curr,

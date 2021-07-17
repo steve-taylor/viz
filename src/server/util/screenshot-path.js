@@ -1,5 +1,7 @@
 const path = require('path');
 
+const viewportToString = require('./viewport-to-string');
+
 module.exports = function getScreenshotPath({
     config,
     isTest,
@@ -9,27 +11,11 @@ module.exports = function getScreenshotPath({
     viewportWidth,
     viewportHeight,
 }) {
-    const {
-        outputPath,
-        defaultViewportHeight,
-        defaultViewportWidth,
-    } = config;
-
-    let baseDir;
-
-    if (isDiff) {
-        baseDir = 'diff';
-    } else if (isTest) {
-        baseDir = 'tested';
-    } else {
-        baseDir = 'golden';
-    }
-
     return path.join(
-        outputPath,
-        baseDir,
+        config.outputPath,
+        isDiff ? 'diff' : isTest ? 'tested' : 'baseline',
         suiteName,
         testName,
-        `${viewportWidth || defaultViewportWidth}x${viewportHeight || defaultViewportHeight}.png`
+        `${viewportToString(config, {viewportWidth, viewportHeight})}.png`
     );
 };

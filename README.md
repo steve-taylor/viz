@@ -4,7 +4,7 @@ Visual regression testing framework. Works with all web frameworks.
 
 [![npm version](https://img.shields.io/npm/v/viz.svg?style=flat)](https://www.npmjs.com/package/viz)
 ![npm](https://img.shields.io/npm/dw/viz.svg)
-[![Build Status](https://travis-ci.org/steve-taylor/viz.svg?branch=develop)](https://travis-ci.org/steve-taylor/viz)
+![Build Status](https://github.com/steve-taylor/viz/actions/workflows/publish/badge.svg)
 
 ## Quick start
 
@@ -14,62 +14,81 @@ Install:
 npm i -D viz
 ```
 
-Create some tests:
+Configure Babel in your [configuration file](#configuration), e.g.
 
-```jsx harmony
-// my-component.viz.js
+```json
+{
+    "babel": {
+        "presets": [
+            "@babel/preset-env",
+            [
+                "@babel/preset-react",
+                {
+                    "runtime": "automatic"
+                }
+            ],
+            "@babel/preset-typescript"
+        ]
+    }
+}
+```
 
-import React from 'react';
-import ReactDOM from 'react-dom';
-import MyComponent from './my-component';
+Create some tests using TypeScript (`.viz.tsx`) or JavaScript (`.viz.js` or `.viz.jsx`):
+
+```tsx
+// my-component.viz.tsx
+
+import {render, unmountComponentAtNode} from 'react-dom'
+import {afterEach, beforeEach, describe, test} from 'viz'
+import MyComponent from './my-component'
 
 describe('my-component', () => {
     beforeEach(async () => {
         // Setup before each my-component test...
-    });
+    })
 
     afterEach(async (target) => {
         // Clean up after each my-component test
-        ReactDOM.unmountComponentAtNode(target);
-    });
+        unmountComponentAtNode(target)
+    })
 
-    test('basic', async (target) => {
+    test('basic', async target => {
         // Asynchronously render inside the target DOM node
-        await new Promise((resolve) => {
-            ReactDOM.render(
+        await new Promise<void>(resolve => {
+            render(
                 <MyComponent />,
                 target,
                 resolve
-            );
-        });
+            )
+        })
 
         // Return the DOM node for Viz to screenshot
-        return target.firstChild;
-    });
+        return target.firstChild
+    })
 
-    test('disabled', async (target) => {
-        await new Promise((resolve) => {
-            ReactDOM.render(
+    test('disabled', async target => {
+        await new Promise<void>(resolve => {
+            render(
                 <MyComponent disabled/>,
                 target,
                 resolve
-            );
-        });
+            )
+        })
 
         // Return the DOM node for Viz to screenshot
-        return target.firstChild;
+        return target.firstChild
 
         // Override the screenshot viewports specified in describe()
-    }, [[320, 568], [1024, 768]]);
+    }, [[320, 568], [1024, 768]])
 
     // Optional screenshot viewports [width, height] (defaults to [1280, 1024])
-}, [[320, 568], [768, 1024], [1024, 768], [1280, 768]]);
+}, [[320, 568], [768, 1024], [1024, 768], [1280, 768]])
 ```
 
-Generate golden screenshots:
+Generate baseline screenshots:
 
 ```bash
-npx viz make-goldens
+npx viz baseline
 ```
 
 Test your UI:
@@ -87,15 +106,20 @@ production.
 
 ## CLI usage
 
-```
-    viz help         - Show this message
-    viz compile      - Compile the local test cases
-    viz make-golden  - Make golden screenshots from each of the test cases
-             --missing                  - Only take golden screenshots that don't yet exist
-             --suite SUITE-1 SUITE-2    - Run specific suites
-             --skip-compile             - Don't compile the tests
-    viz test         - Make screenshots and test them against the golden screenshots
-```
+| Command        | Description                                                                |
+| -------------- | -------------------------------------------------------------------------- |
+| `viz compile`  | Compile all test cases.                                                    |
+| `viz baseline` | Take baseline screenshots.                                                 |
+| `viz test`     | Run viz tests, taking screenshots and comparing them against the baseline. |
+| `viz help`     | Get help.                                                                  |
+
+### `viz baseline` options
+
+| Option                    | Description                                          |
+| --------------------------|------------------------------------------------------|
+| `--missing`               | Only take baseline screenshots that don’t yet exist. |
+| `--suite SUITE-1 SUITE-2` | Only run specified suites.                           |
+| `--skip-compile`          | Don’t compile test. (Assumes they’ve been compiled.) |
 
 ## Debugging tests in the browser
 
@@ -114,73 +138,10 @@ individually in a browser.
 4. Open your browser's JavaScript console.
 5. Run the test by suite name and test name, e.g.
    ```js
-   viz.runTest('my-component', 'basic');
+   viz.runTest('my-component', 'basic')
    ```
 
 Viz will render your test and, from there, you can inspect it.
-
-## Babel support
-
-Viz compiles your tests using Babel. As long as your package has a local
-`.babelrc` and the required presets and plugins, Viz should be able to build
-your tests.
-
-## TypeScript support
-
-Although viz source is JavaScript, it supports TypeScript via Babel (see above)
-and comes with type definitions.
-
-TypeScript support requires viz to be explicitly imported, e.g.
-
-```tsx
-// my-component.viz.tsx
-import {render, unmountComponentAtNode} from 'react-dom'
-import {describe, beforeEach, afterEach, test} from 'viz'
-
-import MyComponent from './MyComponent'
-
-describe('my-component', () => {
-    beforeEach(async () => {
-        // Setup before each my-component test...
-    })
-
-    afterEach(async target => {
-        // Clean up after each my-component test
-        unmountComponentAtNode(target)
-    })
-
-    test('basic', async target => {
-        // Asynchronously render inside the target DOM node
-        await new Promise<void>(resolve => {
-            ReactDOM.render(
-                <MyComponent />,
-                target,
-                resolve
-            )
-        })
-
-        // Return the DOM node for Viz to screenshot
-        return target.firstChild
-    })
-
-    test('disabled', async target => {
-        await new Promise<void>(resolve => {
-            ReactDOM.render(
-                <MyComponent disabled/>,
-                target,
-                resolve
-            )
-        })
-
-        // Return the DOM node for Viz to screenshot
-        return target.firstChild
-
-        // Override the screenshot viewports specified in describe()
-    }, [[320, 568], [1024, 768]])
-
-    // Optional screenshot viewports [width, height] (defaults to [1280, 1024])
-}, [[320, 568], [768, 1024], [1024, 768], [1280, 768]])
-```
 
 ## Configuration
 
@@ -194,20 +155,23 @@ project's root:
 
 Valid configuration options are as follows:
 
-| Option                  | Description                                                       | Default                                     |
-|-------------------------|-------------------------------------------------------------------|---------------------------------------------|
-| `chromeExecutablePath`  | Path to external Chrome executable                                |                                             |
-| `concurrentLimit`       | Number of browsers to run in parallel                             | `1`                                         |
-| `defaultViewportWidth`  | Default viewport width in pixels                                  | `1024`                                      |
-| `defaultViewportHeight` | Default viewport height in pixels                                 | `1080`                                      |
-| `outputPath`            | Output path for screenshots                                       | `tmp`                                       |
-| `testReportOutputDir`   | Path for test reports                                             | `tmp/report`                                |
-| `testFilePath`          | Path to search for test files                                     | Current working directory                   |
-| `testFilePattern`       | File extension (or array of file extensions) of test files        | `[".viz.js", ".viz.jsx", ".viz.tsx"]`       |
-| `testRunnerHtml`        | Optional custom HTML page in which tests should be executed       |                                             |
-| `tmpDir`                | Optional custom directory to store temporary files                | `.viz/out` in the current working directory |
-| `threshold`             | Image matching threshold from 0 to 1 (smaller is more sensitive)  | `0`                                         |
-| `includeAA`             | Whether to disable detecting and ignoring anti-aliased pixels     | `false`                                     |
+| Option                          | Description                                                       | Default                                                        |
+|---------------------------------|-------------------------------------------------------------------|----------------------------------------------------------------|
+| `chromeExecutablePath`          | Path to external Chrome executable                                |                                                                |
+| `concurrentLimit`               | Number of browsers to run in parallel                             | `1`                                                            |
+| `defaultViewportWidth`          | Default viewport width in pixels                                  | `1024`                                                         |
+| `defaultViewportHeight`         | Default viewport height in pixels                                 | `1080`                                                         |
+| `viewportScale `                | Viewport scale                                                    | `1`                                                            |
+| `outputPath`                    | Output path for screenshots                                       | `.viz/out`                                                     |
+| `testReportOutputDir`           | Path for test reports                                             | `.viz/out/report`                                              |
+| `testFilePath`                  | Path to search for test files                                     | Current working directory                                      |
+| `testFilePattern`               | File extension (or array of file extensions) of test files        | `[".viz.js", ".viz.jsx", ".viz.tsx"]`                          |
+| `testRunnerHtml`                | Optional custom HTML page in which tests should be executed       |                                                                |
+| `tmpDir`                        | Optional custom directory to store temporary files                | `.viz/tmp` in the current working directory                    |
+| `threshold`                     | Image matching threshold from 0 to 1 (smaller is more sensitive)  | `0`                                                            |
+| `includeAA`                     | Whether to disable detecting and ignoring anti-aliased pixels     | `false`                                                        |
+| `babel`                         | Babel configuration                                               | `{presets: ['@babel/preset-env', '@babel/preset-typescript']}` |
+| `sourceMaps`                    | Whether to include source maps in the build                       | `false`                                                        |
 
 NOTE: If `chromeExecutablePath` isn't specified, Viz tries to find an installation of Chrome and may fail to do so.
 

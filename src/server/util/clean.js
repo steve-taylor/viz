@@ -3,7 +3,7 @@ const fsExtra = require('fs-extra');
 
 module.exports = async function clean({
     config,
-    clearGolden = false,
+    clearBaselineScreenshots = false,
     skipCompile = false,
 }) {
     const {tmpDir, outputPath} = config;
@@ -12,6 +12,6 @@ module.exports = async function clean({
         !skipCompile && fsExtra.emptyDir(tmpDir),
         fsExtra.emptyDir(path.join(outputPath, 'tested')),
         fsExtra.emptyDir(path.join(outputPath, 'diff')),
-        clearGolden && fsExtra.emptyDir(path.join(outputPath, 'golden')),
+        clearBaselineScreenshots && fsExtra.emptyDir(path.join(outputPath, 'baseline')),
     ]);
 };

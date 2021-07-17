@@ -1,8 +1,8 @@
 import 'core-js/stable';
 import 'regenerator-runtime';
 
+import {runTest} from './toolkit';
 import Viz from './viz';
-import {_setup, runTest} from './toolkit';
 
 const viz = new Viz();
 
@@ -47,27 +47,22 @@ export function test(testName, testRunner, testViewports) {
 }
 
 /**
- * Alis for {@link test}.
+ * Alias for {@link test}.
  */
 export function it(testName, testRunner, testViewports) {
     test(testName, testRunner, testViewports)
 }
 
 Object.assign(window, {
-    // Legacy global API
-    describe,
-    beforeEach,
-    afterEach,
-    test,
-    it,
+    viz: {
+        // For debugging tests in the browser
+        runTest,
 
-    // API through which Node.js viz communicates with browser viz via puppeteer
-    _registerTests: () => viz.registerAllTests(),
-    _runTests: (props) => viz.runTests(props),
-    _getSuites: () => viz.registeredSuites,
-    _getTests: () => viz.registeredTests,
-    _reset: () => viz.reset,
-
-    // For debugging tests in the browser
-    viz: {_setup, runTest},
+        // API through which Node.js viz communicates with browser viz via puppeteer
+        _registerTests: () => viz.registerAllTests(),
+        _runTests: (props) => viz.runTests(props),
+        _getSuites: () => viz.registeredSuites,
+        _getTests: () => viz.registeredTests,
+        _reset: () => viz.reset(),
+    },
 });

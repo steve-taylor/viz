@@ -6,7 +6,7 @@ const getTestsByViewport = require('../util/tests-by-viewport');
 const ensureDirs = require('../util/ensure-dirs');
 const logger = require('../util/logger');
 
-module.exports = async function makeGolden({
+module.exports = async function takeBaselineScreenshots({
     shouldReplaceMissingOnly,
     specificSuiteNames,
     skipCompile,
@@ -15,7 +15,7 @@ module.exports = async function makeGolden({
     await clean({
         config,
         skipCompile,
-        clearGolden: !!specificSuiteNames && !!shouldReplaceMissingOnly,
+        clearBaselineScreenshots: !!specificSuiteNames && !!shouldReplaceMissingOnly,
     });
 
     if (!skipCompile) {

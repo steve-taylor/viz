@@ -1,8 +1,9 @@
 const chunk = require('lodash/chunk');
 const times = require('lodash/times');
 
-const getScreenshotPath = require('./screenshot-path');
 const logger = require('./logger');
+const getScreenshotPath = require('./screenshot-path');
+const viewportToString = require('./viewport-to-string');
 
 // Refresh the pages at most every 20 tests to avoid puppeteer hanging
 const PAGE_REFRESH_FREQUENCY = 20;
@@ -44,12 +45,13 @@ async function runTestsForThread({
             continue;
         }
 
-        logger.info(`Thread ${threadNumber} running ${tests.length} test(s) at viewport ${viewportWidth}x${viewportHeight}`);
+        logger.info(`Thread ${threadNumber} running ${tests.length} test(s) at viewport ${viewportToString(config, {viewportWidth, viewportHeight})}`);
 
         // set viewport on page
         await page.setViewport({
             width: viewportWidth,
             height: viewportHeight,
+            deviceScaleFactor: config.viewportScale ?? undefined,
         });
 
         const testsForWindow = tests.map(({testName, suiteName, ...rest}) => ({
@@ -74,7 +76,7 @@ async function runTestsForThread({
                 try {
                     await Promise.race([
                         (async () => {
-                            await page.evaluate((tests) => window._runTests({tests}), tests);
+                            await page.evaluate((tests) => window.viz._runTests({tests}), tests);
                             clearTimeout(hungPageTimeout);
                         })(),
 
@@ -84,7 +86,7 @@ async function runTestsForThread({
                                 () => {
                                     logger.warn(
                                         [
-                                            `Thread ${threadNumber} at viewport ${viewportWidth}x${viewportHeight} has been running for more than ${Math.floor(SLOW_TEST_WARNING_TIME_MS / 1000)}s.`,
+                                            `Thread ${threadNumber} at viewport ${viewportToString(config, {viewportWidth, viewportHeight})} has been running for more than ${Math.floor(SLOW_TEST_WARNING_TIME_MS / 1000)}s.`,
                                             retryCount < NUM_TEST_RETRIES && 'Retrying.'
                                         ]
                                             .filter(Boolean) // Filter out 'Retrying' if we're not retrying anymore
@@ -102,7 +104,7 @@ async function runTestsForThread({
                 } catch (error) {
                     // Reload the page and re-register tests
                     await page.reload();
-                    await page.evaluate(() => window._registerTests());
+                    await page.evaluate(() => window.viz._registerTests());
 
                     // If there are no more retries left, log and throw an error
                     if (retryCount === NUM_TEST_RETRIES) {

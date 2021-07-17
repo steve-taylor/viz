@@ -1,5 +1,3 @@
-const path = require('path');
-const {execSync} = require('child_process');
 const http = require('http');
 const puppeteer = require('puppeteer-core');
 const serveHandler = require('serve-handler');
@@ -29,21 +27,18 @@ const tryIncrementally = (thingToTry, incrementDuration, maxDuration) => {
     return fullPromise;
 };
 
-module.exports = async function setupPuppeteer(config) {
-    const {
-        chromeExecutablePath,
-        concurrentLimit,
-        testRunnerHtml,
-    } = config;
-
+module.exports = async function setupPuppeteer({
+    chromeExecutablePath,
+    concurrentLimit,
+    tmpDir,
+}) {
     logger.info(`Attempting to set up Puppeteer with ${concurrentLimit} pages...`);
 
     const port = await portfinder.getPortPromise({port: 9009});
 
     logger.info(`Setting up server on port ${port}`);
 
-    // If the user supplied a testRunnerHtml via config, run in their cwd
-    const serveHandlerOptions = {public: testRunnerHtml ? process.cwd() : path.join(__dirname, '..', '..', '..')};
+    const serveHandlerOptions = {public: tmpDir};
     const server = http.createServer((req, res) => serveHandler(req, res, serveHandlerOptions));
 
     await new Promise((resolve) => void server.listen(port, resolve));
@@ -68,7 +63,7 @@ module.exports = async function setupPuppeteer(config) {
         });
     });
 
-    // For each of our pages, expose relevant functions to the page and then send them to the runner.html
+    // For each of our pages, expose relevant functions to the page and then send them to the runner html
     await Promise.all(pages.map((page) => (
         // Expose all functions to the page in parallel
         Promise.all([
@@ -103,11 +98,11 @@ module.exports = async function setupPuppeteer(config) {
         ])
             // Try to go to that page every PAGE_WAIT_INCREMENTS_MS (it takes some time for the server to actually be up)
             .then(() => tryIncrementally(
-                () => page.goto(`http://localhost:${port}/${testRunnerHtml || 'bin/runner.html'}`),
+                () => page.goto(`http://localhost:${port}/runner.html`),
                 PAGE_WAIT_INCREMENTS_MS,
                 MAX_PAGE_WAIT_MS
             ))
-            .then(() => page.waitForFunction(() => !!window._registerTests))
+            .then(() => page.waitForFunction(() => !!window.viz._registerTests))
     )));
 
     logger.info('Puppeteer setup complete');

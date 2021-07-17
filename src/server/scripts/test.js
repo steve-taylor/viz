@@ -26,7 +26,7 @@ function getAllTestPermutations({
     ]), []);
 }
 
-async function doAllTestsHaveAGolden({
+async function doAllTestsHaveABaseline({
     config,
     testPermutations,
 }) {
@@ -51,31 +51,31 @@ async function doAllTestsHaveAGolden({
     return eachPathExists.every(Boolean);
 }
 
-async function doAllGoldensHaveATest({
+async function doAllBaselinesHaveATest({
     config,
     testPermutations,
 }) {
-    const goldenScreenshotsBaseDir = path.join(config.outputPath, 'golden');
-    const goldenScreenshotPaths = await recursive(goldenScreenshotsBaseDir, [
+    const baselineScreenshotsBaseDir = path.join(config.outputPath, 'baseline');
+    const baselineScreenshotPaths = await recursive(baselineScreenshotsBaseDir, [
         (file, stats) => !(stats.isDirectory() || file.endsWith('.png')),
     ]);
 
-    return goldenScreenshotPaths.every((goldenScreenshotPath) => {
-        const [suiteName, testName, dimensions] = goldenScreenshotPath.split(path.sep).slice(-3);
+    return baselineScreenshotPaths.every((baselineScreenshotPath) => {
+        const [suiteName, testName, dimensions] = baselineScreenshotPath.split(path.sep).slice(-3);
         const [viewportWidth, viewportHeight] = path.basename(dimensions, '.png').split('x');
 
-        const goldenHasTest = testPermutations.some((test) => (
+        const baselineHasTest = testPermutations.some((test) => (
             test.suiteName === suiteName
             && test.testName === testName
             && test.viewportWidth.toString() === viewportWidth.toString()
             && test.viewportHeight.toString() === viewportHeight.toString()
         ));
 
-        if (!goldenHasTest) {
-            logger.info(`Golden screenshot at ${goldenScreenshotPath} has no associated test`);
+        if (!baselineHasTest) {
+            logger.info(`Baseline screenshot at ${baselineScreenshotPath} has no associated test`);
         }
 
-        return goldenHasTest;
+        return baselineHasTest;
     });
 }
 
@@ -113,7 +113,7 @@ async function testScreenshots({
             .className(`${suiteName}/${testName}`)
             .name(`${viewportWidth}x${viewportHeight}`);
 
-        const [testedPath, diffPath, goldenPath] = [{isTest: true}, {isDiff: true}, {isTest: false}]
+        const [testedPath, diffPath, baselinePath] = [{isTest: true}, {isDiff: true}, {isTest: false}]
             .map(({isTest, isDiff}) => getScreenshotPath({
                 config,
                 isTest,
@@ -125,7 +125,7 @@ async function testScreenshots({
             }));
         const {imagesAreSame, diffCount} = await imgDiff({
             actualFilename: testedPath,
-            expectedFilename: goldenPath,
+            expectedFilename: baselinePath,
             diffFilename: diffPath,
             generateOnlyDiffFile: true,
             options: {
@@ -140,11 +140,11 @@ async function testScreenshots({
             logger.info(`Test ${suiteName}/${testName}/${viewportWidth}x${viewportHeight} differed by ${diffCount} pixels`);
             testCase.failure(`Differed by ${diffCount} pixels`);
 
-            // Save the golden/tested/diff images to the reports directory
+            // Save the baseline/tested/diff images to the reports directory
             await Promise.all([
                 {baseDir: 'diff', originalPath: diffPath},
                 {baseDir: 'tested', originalPath: testedPath},
-                {baseDir: 'golden', originalPath: goldenPath},
+                {baseDir: 'baseline', originalPath: baselinePath},
             ].map(async ({baseDir, originalPath}) => {
                 const reportOutputPath = path.join(testReportOutputDir, 'failing-screenshots', baseDir, suiteName, testName);
 
@@ -215,24 +215,24 @@ module.exports = async function test({
 
     // Don't bother going further if we couldn't properly take screenshots
     if (testsPassed) {
-        const testCaseAllTestsHaveGolden = metaTestSuite
+        const testCaseAllTestsHaveBaseline = metaTestSuite
             .testCase()
-            .name('All tests can be compared against a golden screenshot');
+            .name('All tests can be compared against a baseline screenshot');
 
-        if (!await doAllTestsHaveAGolden({testPermutations, config})) {
-            logger.info('Not all tests have a golden screenshot');
+        if (!await doAllTestsHaveABaseline({testPermutations, config})) {
+            logger.info('Not all tests have a baseline screenshot');
             testsPassed = false;
-            testCaseAllTestsHaveGolden.failure();
+            testCaseAllTestsHaveBaseline.failure();
         }
 
-        const testCaseAllGoldensHaveATest = metaTestSuite
+        const testCaseAllBaselinesHaveATest = metaTestSuite
             .testCase()
-            .name('All golden screenshots can be compared against a test');
+            .name('All baseline screenshots can be compared against a test');
 
-        if (!await doAllGoldensHaveATest({config, testPermutations})) {
-            logger.info('Not all golden screenshots have a test');
+        if (!await doAllBaselinesHaveATest({config, testPermutations})) {
+            logger.info('Not all baseline screenshots have a test');
             testsPassed = false;
-            testCaseAllGoldensHaveATest.failure();
+            testCaseAllBaselinesHaveATest.failure();
         }
 
         const testCaseAllTestsUnique = metaTestSuite

@@ -15,14 +15,22 @@ const DEFAULT_CONFIG = {
     concurrentLimit: 1,
     defaultViewportWidth: 1024,
     defaultViewportHeight: 1080,
-    outputPath: path.join(process.cwd(), 'tmp'),
-    testReportOutputDir: path.join(process.cwd(), 'tmp', 'report'),
+    viewportScale: 1,
+    outputPath: path.resolve(process.cwd(), '.viz', 'out'),
+    testReportOutputDir: path.resolve(process.cwd(), '.viz', 'out', 'report'),
     testFilePath: process.cwd(),
     testFilePattern: ['.viz.js', '.viz.jsx', '.viz.tsx'],
     testRunnerHtml: null,
-    tmpDir: path.join(process.cwd(), '.viz', 'out'),
+    tmpDir: path.resolve(process.cwd(), '.viz', 'tmp'),
     threshold: 0,
     includeAA: false,
+    babel: {
+        presets: [
+            '@babel/preset-env',
+            '@babel/preset-typescript',
+        ],
+    },
+    sourceMaps: false,
 };
 
 module.exports = async function getConfig() {

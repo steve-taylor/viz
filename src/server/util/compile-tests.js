@@ -22,6 +22,9 @@ module.exports = async function compileTests({
     testFilePath,
     testFilePattern,
     tmpDir,
+    testRunnerHtml,
+    babel,
+    sourceMaps,
 }) {
     logger.info('Compiling tests...');
 
@@ -43,14 +46,12 @@ module.exports = async function compileTests({
         const writeablePipeline = browserify(testFilePaths, {
             standalone: BUNDLE_NAME,
             extensions,
+            debug: sourceMaps,
         })
             .transform('babelify', {
+                ...babel,
+                global: true,
                 extensions,
-                presets: [
-                    '@babel/preset-env',
-                    '@babel/preset-react',
-                    '@babel/preset-typescript',
-                ],
             })
             .transform(envify({NODE_ENV: process.env.NODE_ENV || 'development'}))
             .bundle()
@@ -64,10 +65,15 @@ module.exports = async function compileTests({
 
         writeablePipeline.on('finish', () => {
             writeablePipeline.end();
-            logger.info('Test bundle created');
             resolve();
         });
     });
+
+    // Copy the test runner to tmpDir
+    await fsExtra.copy(
+        testRunnerHtml ?? path.resolve(__dirname, '..', '..', 'runner.html'),
+        path.resolve(tmpDir, 'runner.html')
+    )
 
     logger.info('Compilation complete');
 };
