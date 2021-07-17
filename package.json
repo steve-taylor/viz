@@ -1,6 +1,6 @@
 {
   "name": "viz",
-  "version": "2.0.0-alpha.8",
+  "version": "2.0.0-alpha.9",
   "description": "Visual regression testing framework",
   "license": "MIT",
   "repository": "steve-taylor/viz",
