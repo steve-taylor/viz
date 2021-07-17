@@ -53,14 +53,21 @@ export function it(testName, testRunner, testViewports) {
     test(testName, testRunner, testViewports)
 }
 
-// Allow usage without importing viz (may be deprecated in a future major release).
-Object.assign(window, {describe, beforeEach, afterEach, test, it})
+Object.assign(window, {
+    // Legacy global API
+    describe,
+    beforeEach,
+    afterEach,
+    test,
+    it,
 
-window._registerTests = () => viz.registerAllTests();
-window._runTests = (props) => viz.runTests(props);
-window._getSuites = () => viz.registeredSuites;
-window._getTests = () => viz.registeredTests;
-window._reset = () => viz.reset;
+    // API through which Node.js viz communicates with browser viz via puppeteer
+    _registerTests: () => viz.registerAllTests(),
+    _runTests: (props) => viz.runTests(props),
+    _getSuites: () => viz.registeredSuites,
+    _getTests: () => viz.registeredTests,
+    _reset: () => viz.reset,
 
-// For debugging tests in the browser
-window.viz = {_setup, runTest};
+    // For debugging tests in the browser
+    viz: {_setup, runTest},
+});

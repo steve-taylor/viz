@@ -9,6 +9,15 @@ const logger = require('./logger');
 
 const BUNDLE_NAME = 'viz-tests';
 
+const EXTENSIONS = [
+    '.js',
+    '.jsx',
+    '.mjs',
+    '.json',
+    '.ts',
+    '.tsx',
+]
+
 module.exports = async function compileTests({
     testFilePath,
     testFilePattern,
@@ -27,15 +36,21 @@ module.exports = async function compileTests({
     logger.debug('Found test files at:', testFilePaths);
 
     await new Promise((resolve, reject) => {
+        const extensions = [
+            ...EXTENSIONS,
+            ...(Array.isArray(testFilePattern) ? testFilePattern : [testFilePattern])
+        ]
         const writeablePipeline = browserify(testFilePaths, {
             standalone: BUNDLE_NAME,
+            extensions,
         })
             .transform('babelify', {
+                extensions,
                 presets: [
                     '@babel/preset-env',
                     '@babel/preset-react',
                     '@babel/preset-typescript',
-                ]
+                ],
             })
             .transform(envify({NODE_ENV: process.env.NODE_ENV || 'development'}))
             .bundle()

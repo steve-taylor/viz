@@ -50,9 +50,7 @@ module.exports = async function setupPuppeteer(config) {
 
     const puppeteerOptions = {
         args: ['--no-sandbox', '--disable-setuid-sandbox'],
-        executablePath: chromeExecutablePath || execSync('which google-chrome-beta')
-            .toString()
-            .replace('\n', ''),
+        executablePath: chromeExecutablePath?.toString().replace('\n', ''),
     };
 
     const browsers = await Promise.all(times(Math.max(1, concurrentLimit), () => puppeteer.launch(puppeteerOptions)));

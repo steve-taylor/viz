@@ -133,7 +133,7 @@ and comes with type definitions.
 TypeScript support requires viz to be explicitly imported, e.g.
 
 ```tsx
-// my-component.viz.ts
+// my-component.viz.tsx
 import {render, unmountComponentAtNode} from 'react-dom'
 import {describe, beforeEach, afterEach, test} from 'viz'
 
@@ -160,26 +160,26 @@ describe('my-component', () => {
         })
 
         // Return the DOM node for Viz to screenshot
-        return target.firstChild;
+        return target.firstChild
     })
 
-    test('disabled', async (target) => {
-        await new Promise((resolve) => {
+    test('disabled', async target => {
+        await new Promise<void>(resolve => {
             ReactDOM.render(
                 <MyComponent disabled/>,
                 target,
                 resolve
-            );
-        });
+            )
+        })
 
         // Return the DOM node for Viz to screenshot
-        return target.firstChild;
+        return target.firstChild
 
         // Override the screenshot viewports specified in describe()
-    }, [[320, 568], [1024, 768]]);
+    }, [[320, 568], [1024, 768]])
 
     // Optional screenshot viewports [width, height] (defaults to [1280, 1024])
-}, [[320, 568], [768, 1024], [1024, 768], [1280, 768]]);
+}, [[320, 568], [768, 1024], [1024, 768], [1280, 768]])
 ```
 
 ## Configuration
@@ -194,20 +194,22 @@ project's root:
 
 Valid configuration options are as follows:
 
-| Option                  | Description                                                      | Default                               |
-|-------------------------|------------------------------------------------------------------|---------------------------------------|
-| `chromeExecutablePath`  | Path to your Chrome executable                                   | Result of `which google-chrome-beta`  |
-| `concurrentLimit`       | Number of browsers to run in parallel                            | `1`                                   |
-| `defaultViewportWidth`  | Default viewport width in pixels                                 | `1024`                                |
-| `defaultViewportHeight` | Default viewport height in pixels                                | `1080`                                |
-| `outputPath`            | Output path for screenshots                                      | `tmp`                                 |
-| `testReportOutputDir`   | Path for test reports                                            | `tmp/report`                          |
-| `testFilePath`          | Path to search for test files                                    | Current working directory             |
-| `testFilePattern`       | File extension (or array of file extensions) of test files       | `[".viz.js", ".viz.jsx", ".viz.tsx"]` |
-| `testRunnerHtml`        | Optional custom HTML page in which tests should be executed      |                                       |
-| `tmpDir`                | Optional custom directory to store temporary files               |                                       |
-| `threshold`             | Image matching threshold from 0 to 1 (smaller is more sensitive) | `0`                                   |
-| `includeAA`             | Whether to disable detecting and ignoring anti-aliased pixels    | `false`                               |
+| Option                  | Description                                                       | Default                                     |
+|-------------------------|-------------------------------------------------------------------|---------------------------------------------|
+| `chromeExecutablePath`  | Path to external Chrome executable                                |                                             |
+| `concurrentLimit`       | Number of browsers to run in parallel                             | `1`                                         |
+| `defaultViewportWidth`  | Default viewport width in pixels                                  | `1024`                                      |
+| `defaultViewportHeight` | Default viewport height in pixels                                 | `1080`                                      |
+| `outputPath`            | Output path for screenshots                                       | `tmp`                                       |
+| `testReportOutputDir`   | Path for test reports                                             | `tmp/report`                                |
+| `testFilePath`          | Path to search for test files                                     | Current working directory                   |
+| `testFilePattern`       | File extension (or array of file extensions) of test files        | `[".viz.js", ".viz.jsx", ".viz.tsx"]`       |
+| `testRunnerHtml`        | Optional custom HTML page in which tests should be executed       |                                             |
+| `tmpDir`                | Optional custom directory to store temporary files                | `.viz/out` in the current working directory |
+| `threshold`             | Image matching threshold from 0 to 1 (smaller is more sensitive)  | `0`                                         |
+| `includeAA`             | Whether to disable detecting and ignoring anti-aliased pixels     | `false`                                     |
+
+NOTE: If `chromeExecutablePath` isn't specified, Viz tries to find an installation of Chrome and may fail to do so.
 
 ## Additional features
 

@@ -23,8 +23,8 @@
   "scripts": {
     "clean": "echo 'CLEAN' && rimraf ./bin/viz.js tmp reports",
     "mkdirs": "echo 'MKDIRS' && mkdirp tmp",
-    "build": "npm run -s clean && npm run -s mkdirs && echo 'BUILD' && browserify -t [ babelify --presets [ @babel/preset-env @babel/preset-react @babel/preset-typescript ] ] -t [ envify --NODE_ENV production ] ./src/browser/index.js -o bin/viz.js",
-    "watch": "npm run -s clean && npm run -s mkdirs && echo 'WATCH' && watchify -t [ babelify --presets [ @babel/preset-env @babel/preset-react @babel/preset-typescript ] ] -t [ envify --NODE_ENV development ] ./src/browser/index.js -o bin/viz.js",
+    "build": "npm run -s clean && npm run -s mkdirs && echo 'BUILD' && browserify -t [ babelify --presets [ @babel/preset-env ] ] -t [ envify --NODE_ENV production ] ./src/browser/index.js -o bin/viz.js",
+    "watch": "npm run -s clean && npm run -s mkdirs && echo 'WATCH' && watchify -t [ babelify --presets [ @babel/preset-env ] ] -t [ envify --NODE_ENV development ] ./src/browser/index.js -o bin/viz.js",
     "postinstall": "npm run build"
   },
   "dependencies": {

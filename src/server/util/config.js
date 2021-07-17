@@ -1,10 +1,17 @@
 const path = require('path');
 const fsExtra = require('fs-extra');
+const os = require('os');
 
 const logger = require('./logger');
 
+const chromePaths = {
+    linux: '/usr/bin/chromium-browser',
+    darwin: '/Applications/Google Chrome.app/Contents/MacOS/Google Chrome',
+    win32: `${process.env.PROGRAMFILES}\\Google\\Chrome\\Application\\chrome.exe`
+}
+
 const DEFAULT_CONFIG = {
-    chromeExecutablePath: null,
+    chromeExecutablePath: chromePaths[os.platform()] ?? null,
     concurrentLimit: 1,
     defaultViewportWidth: 1024,
     defaultViewportHeight: 1080,
@@ -13,7 +20,7 @@ const DEFAULT_CONFIG = {
     testFilePath: process.cwd(),
     testFilePattern: ['.viz.js', '.viz.jsx', '.viz.tsx'],
     testRunnerHtml: null,
-    tmpDir: path.join(__dirname, '..', '..', '..', 'tmp'),
+    tmpDir: path.join(process.cwd(), '.viz', 'out'),
     threshold: 0,
     includeAA: false,
 };
