@@ -39,7 +39,7 @@ Create some tests using TypeScript (`.viz.tsx`) or JavaScript (`.viz.js` or `.vi
 // my-component.viz.tsx
 
 import {render, unmountComponentAtNode} from 'react-dom'
-import {afterEach, beforeEach, describe, test} from 'viz'
+import {afterEach, beforeEach, click, describe, hover, test} from 'viz'
 import MyComponent from './my-component'
 
 describe('my-component', () => {
@@ -80,6 +80,34 @@ describe('my-component', () => {
 
         // Override the screenshot viewports specified in describe()
     }, [[320, 568], [1024, 768]])
+
+    test('focus', async target => {
+        await new Promise<void>(resolve => {
+            render(
+                <MyComponent />,
+                target,
+                async () => {
+                    // Trigger focus state
+                    await click('.MyComponent')
+                    resolve()
+                }
+            )
+        })
+    })
+
+    test('hover', async target => {
+        await new Promise<void>(resolve => {
+            render(
+                <MyComponent />,
+                target,
+                async () => {
+                    // Trigger hover state
+                    await hover('.MyComponent')
+                    resolve()
+                }
+            )
+        })
+    })
 
     // Optional screenshot viewports [width, height] (defaults to [1280, 1024])
 }, [[320, 568], [768, 1024], [1024, 768], [1280, 768]])

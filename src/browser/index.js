@@ -53,6 +53,26 @@ export function it(testName, testRunner, testViewports) {
     test(testName, testRunner, testViewports)
 }
 
+/**
+ * Hover the element at the specified selector.
+ *
+ * @param selector - selector of element to hover
+ * @return {Promise<void>} promise that resolves when the hover state has been applied
+ */
+export async function click(selector) {
+    await window.puppeteerClick(selector)
+}
+
+/**
+ * Click the element at the specified selector.
+ *
+ * @param selector - selector of element to lick
+ * @return {Promise<void>} promise that resolves after the element has been clicked
+ */
+export async function hover(selector) {
+    await window.puppeteerHover(selector)
+}
+
 Object.assign(window, {
     viz: {
         // For debugging tests in the browser
