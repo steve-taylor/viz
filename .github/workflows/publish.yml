@@ -14,11 +14,11 @@ jobs:
           node-version: '14.x'
           registry-url: 'https://registry.npmjs.org'
       - run: npm ci
-      - if: {{ github.ref == 'refs/heads/master' }}
+      - if: ${{ github.ref == 'refs/heads/master' }}
         run: npm publish
         env:
           NODE_AUTH_TOKEN: ${{ secrets.NPM_TOKEN }}
-      - if: {{ github.ref == 'refs/heads/develop' }}
+      - if: ${{ github.ref == 'refs/heads/develop' }}
         run: npm publish --tag alpha
         env:
           NODE_AUTH_TOKEN: ${{ secrets.NPM_TOKEN }}
