@@ -134,12 +134,14 @@ production.
 
 ## CLI usage
 
-| Command        | Description                                                                |
-| -------------- | -------------------------------------------------------------------------- |
-| `viz compile`  | Compile all test cases.                                                    |
-| `viz baseline` | Take baseline screenshots.                                                 |
-| `viz test`     | Run viz tests, taking screenshots and comparing them against the baseline. |
-| `viz help`     | Get help.                                                                  |
+| Command                     | Description                                                                |
+| --------------------------- | -------------------------------------------------------------------------- |
+| `viz compile [packageDir]`  | Compile all test cases.                                                    |
+| `viz baseline [packageDir]` | Take baseline screenshots.                                                 |
+| `viz test [packageDir]`     | Run viz tests, taking screenshots and comparing them against the baseline. |
+| `viz --help`                | Get help.                                                                  |
+
+If a package directory is specified, it must exist and contain a package.json file.
 
 ### `viz baseline` options
 
@@ -202,6 +204,13 @@ Valid configuration options are as follows:
 | `sourceMaps`                    | Whether to include source maps in the build                       | `false`                                                        |
 
 NOTE: If `chromeExecutablePath` isn't specified, Viz tries to find an installation of Chrome and may fail to do so.
+
+## Monorepo support
+
+To run a Viz command in a single monorepo package, specify the `packageDir` positional parameter (see usage above).
+
+When specified, `packageDir` overrides `testFilePath` and prefixes `outputPath`, `testReportOutputDir` and `tmpDir` in
+the config file, ensuring Viz generates output in the package's directory.
 
 ## Additional features
 

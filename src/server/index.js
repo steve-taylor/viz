@@ -1,55 +1,93 @@
 #!/usr/bin/env node
-const args = require('minimist')(process.argv.slice(2));
 
-const printHelp = require('./scripts/help');
-const getConfig = require('./util/config');
-const takeBaselineScreenshots = require('./scripts/take-baseline-screenshots');
-const test = require('./scripts/test');
-const compileTests = require('./util/compile-tests');
-const logger = require('./util/logger');
+const identity = require('lodash/identity')
+const noop = require('lodash/noop')
+const yargs = require('yargs/yargs')
+const {hideBin} = require('yargs/helpers')
 
-async function main() {
-    if (args.verbose) {
-        logger.level = 'debug';
-    } else if (args.silent) {
-        logger.level = 'error';
-    } else {
-        logger.level = 'info';
+const getConfig = require('./util/config')
+const takeBaselineScreenshots = require('./scripts/take-baseline-screenshots')
+const test = require('./scripts/test')
+const compileTests = require('./util/compile-tests')
+const logger = require('./util/logger')
+
+const skipCompileOption = [
+    'skip-compile',
+    {
+        describe: 'Don’t compile tests. (Assumes they’ve been compiled.)',
+        type: 'boolean',
     }
+]
 
-    switch (args._[0]) {
-        case 'baseline':
+yargs(hideBin(process.argv))
+    .command(
+        'compile [packageDir]',
+        'Compile tests',
+        identity,
+        async argv => {
+            applyLogLevel(argv)
+            await compileTests(await getConfig(argv.packageDir))
+        })
+    .command(
+        'baseline [packageDir]',
+        'Generate baseline screenshots',
+        yargs => yargs
+            .option('missing', {
+                describe: 'Only take baseline screenshots that don’t yet exist.',
+                type: 'boolean',
+            })
+            .option('suite', {
+                describe: 'Only run specified suites.',
+                type: 'array',
+            })
+            .option(...skipCompileOption),
+        async argv => {
+            applyLogLevel(argv)
             await takeBaselineScreenshots({
-                config: await getConfig(),
-                shouldReplaceMissingOnly: !!args.missing,
-                skipCompile: !!args['skip-compile'],
-                specificSuiteNames: args.suite
-                    ? process.argv.slice(3).filter((arg) => !arg.startsWith('--'))
-                    : null,
-            });
-            break;
-
-        case 'compile':
-            await compileTests(await getConfig());
-            break;
-
-        case 'test':
+                config: await getConfig(argv.packageDir),
+                shouldReplaceMissingOnly: !!argv.missing,
+                skipCompile: !!argv.skipCompile,
+                specificSuiteNames: argv.suite ?? null,
+            })
+        })
+    .command(
+        'test [packageDir]',
+        'Run tests',
+        yargs => yargs.option(...skipCompileOption),
+        async argv => {
+            applyLogLevel(argv)
             await test({
-                config: await getConfig(),
-                skipCompile: !!args['skip-compile'],
-            });
-            break;
+                config: await getConfig(argv.packageDir),
+                skipCompile: !!argv.skipCompile,
+            })
+        })
+    .positional('packageDir', {
+        describe: 'Path to the package containing tests',
+        type: 'string'
+    })
+    .option('verbose', {
+        describe: 'Show verbose logging',
+        type: 'boolean',
+    })
+    .option('silent', {
+        describe: 'Suppress logging',
+        type: 'boolean',
+    })
+    .argv
+    .then(noop)
+    .catch(error => {
+        console.error(error)
+        logger.fatal('Error while running Viz', error)
 
-        default:
-        case 'help':
-            printHelp();
-            break;
+        process.exit(1)
+    })
+
+function applyLogLevel(argv) {
+    if (argv.verbose) {
+        logger.level = 'debug'
+    } else if (argv.silent) {
+        logger.level = 'error'
+    } else {
+        logger.level = 'info'
     }
 }
-
-main().catch((e) => {
-    console.error(e);
-    logger.fatal('Error while running Viz', e);
-
-    process.exit(1);
-});

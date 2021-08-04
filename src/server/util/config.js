@@ -16,12 +16,12 @@ const DEFAULT_CONFIG = {
     defaultViewportWidth: 1024,
     defaultViewportHeight: 1080,
     viewportScale: 1,
-    outputPath: path.resolve(process.cwd(), '.viz', 'out'),
-    testReportOutputDir: path.resolve(process.cwd(), '.viz', 'out', 'report'),
-    testFilePath: process.cwd(),
+    outputPath: '.viz/out',
+    testReportOutputDir: '.viz/out/report',
+    testFilePath: '.',
     testFilePattern: ['.viz.js', '.viz.jsx', '.viz.tsx'],
     testRunnerHtml: null,
-    tmpDir: path.resolve(process.cwd(), '.viz', 'tmp'),
+    tmpDir: '.viz/tmp',
     threshold: 0,
     includeAA: false,
     babel: {
@@ -33,10 +33,20 @@ const DEFAULT_CONFIG = {
     sourceMaps: false,
 };
 
-module.exports = async function getConfig() {
+module.exports = async function getConfig(packageDir) {
+    // If packageDir specified, ensure packageDir/package.json exists
+    if (
+        packageDir &&
+        !(await fsExtra.pathExists(path.resolve(process.cwd(), packageDir, 'package.json')))
+    ) {
+        console.error(`"${packageDir}" isn't a package directory.`)
+        process.exit(1)
+    }
+
     let configJson;
 
     try {
+        // For now, only consider viz configs in the current directory.
         const possibleConfigPaths = [
             'viz.json',
             '.vizrc',
@@ -82,6 +92,21 @@ module.exports = async function getConfig() {
         ...DEFAULT_CONFIG,
         ...configJson,
     };
+
+    // Apply packageDir if specified.
+    if (packageDir) {
+        fullConfig.testFilePath = path.resolve(process.cwd(), packageDir)
+        fullConfig.outputPath = path.join(packageDir, fullConfig.outputPath)
+        fullConfig.testReportOutputDir = path.join(packageDir, fullConfig.testReportOutputDir)
+        fullConfig.tmpDir = path.join(packageDir, fullConfig.tmpDir)
+    }
+
+    // Ensure config paths are absolute
+    ['testFilePath', 'outputPath', 'testReportOutputDir', 'tmpDir'].forEach(configProperty => {
+        if (!fullConfig[configProperty].startsWith(process.cwd())) {
+            fullConfig[configProperty] = path.resolve(process.cwd(), fullConfig[configProperty])
+        }
+    })
 
     logger.debug('Using config', fullConfig);
 
