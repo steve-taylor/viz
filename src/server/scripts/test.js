@@ -256,4 +256,6 @@ module.exports = async function test({
     // Write the test results
     await fsExtra.ensureDir(testReportOutputDir);
     reportBuilder.writeTo(path.join(testReportOutputDir, 'viz-report.xml'));
+
+    return testsPassed;
 };

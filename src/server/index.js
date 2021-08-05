@@ -56,10 +56,15 @@ yargs(hideBin(process.argv))
         yargs => yargs.option(...skipCompileOption),
         async argv => {
             applyLogLevel(argv)
-            await test({
+
+            const success = await test({
                 config: await getConfig(argv.packageDir),
                 skipCompile: !!argv.skipCompile,
             })
+
+            if (!success) {
+                yargs.exit(1)
+            }
         })
     .positional('packageDir', {
         describe: 'Path to the package containing tests',

@@ -46,6 +46,7 @@ module.exports = async function takeBaselineScreenshots({
         });
     } catch (e) {
         logger.error('Error interacting with browser', e);
+        throw e;
     }
 
     // We always want to clean up
