@@ -26,7 +26,13 @@ yargs(hideBin(process.argv))
         identity,
         async argv => {
             applyLogLevel(argv)
-            await compileTests(await getConfig(argv.packageDir))
+
+            try {
+                await compileTests(await getConfig(argv.packageDir))
+            } catch (error) {
+                logger.error(error);
+                process.exit(1);
+            }
         })
     .command(
         'baseline [packageDir]',
@@ -43,12 +49,18 @@ yargs(hideBin(process.argv))
             .option(...skipCompileOption),
         async argv => {
             applyLogLevel(argv)
-            await takeBaselineScreenshots({
-                config: await getConfig(argv.packageDir),
-                shouldReplaceMissingOnly: !!argv.missing,
-                skipCompile: !!argv.skipCompile,
-                specificSuiteNames: argv.suite ?? null,
-            })
+
+            try {
+                await takeBaselineScreenshots({
+                    config: await getConfig(argv.packageDir),
+                    shouldReplaceMissingOnly: !!argv.missing,
+                    skipCompile: !!argv.skipCompile,
+                    specificSuiteNames: argv.suite ?? null,
+                })
+            } catch (error) {
+                logger.error(error);
+                process.exit(1);
+            }
         })
     .command(
         'test [packageDir]',
@@ -63,7 +75,7 @@ yargs(hideBin(process.argv))
             })
 
             if (!success) {
-                yargs.exit(1)
+                process.exit(1)
             }
         })
     .positional('packageDir', {
