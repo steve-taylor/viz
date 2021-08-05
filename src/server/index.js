@@ -31,7 +31,7 @@ yargs(hideBin(process.argv))
     .command(
         'baseline [packageDir]',
         'Generate baseline screenshots',
-        yargs => yargs
+        command => command
             .option('missing', {
                 describe: 'Only take baseline screenshots that don’t yet exist.',
                 type: 'boolean',
@@ -53,7 +53,7 @@ yargs(hideBin(process.argv))
     .command(
         'test [packageDir]',
         'Run tests',
-        yargs => yargs.option(...skipCompileOption),
+        command => command.option(...skipCompileOption),
         async argv => {
             applyLogLevel(argv)
 
