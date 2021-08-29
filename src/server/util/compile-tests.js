@@ -1,10 +1,7 @@
 const path = require('path');
-const fs = require('fs');
 const fsExtra = require('fs-extra');
-const browserify = require('browserify');
-const envify = require('envify/custom');
 const recursive = require('recursive-readdir');
-const realpathify = require('realpathify');
+const webpack = require('webpack');
 
 const logger = require('./logger');
 
@@ -44,30 +41,40 @@ module.exports = async function compileTests({
             ...EXTENSIONS,
             ...(Array.isArray(testFilePattern) ? testFilePattern : [testFilePattern])
         ]
-        const writeablePipeline = browserify(testFilePaths, {
-            standalone: BUNDLE_NAME,
-            extensions,
-            debug: sourceMaps,
-        })
-            .plugin(realpathify)
-            .transform('babelify', {
-                ...babel,
-                global: true,
-                extensions,
-            })
-            .transform(envify({NODE_ENV: process.env.NODE_ENV || 'development'}))
-            .bundle()
-            .pipe(fs.createWriteStream(bundleOutfilePath));
 
-        writeablePipeline.on('error', (e) => {
-            writeablePipeline.end();
-            logger.error('Couldn\'t create test bundle', e);
-            reject();
-        });
-
-        writeablePipeline.on('finish', () => {
-            writeablePipeline.end();
-            resolve();
+        webpack({
+            mode: 'development',
+            entry: testFilePaths,
+            output: {
+                path: path.dirname(bundleOutfilePath),
+                filename: path.basename(bundleOutfilePath)
+            },
+            resolve: {
+                extensions: [...extensions, '.mjs'],
+            },
+            module: {
+                rules: [
+                    {
+                        test: /\.(ts|tsx|js|jsx|mjs|json)$/,
+                        type: 'javascript/auto',
+                        exclude: /node_modules/,
+                        use: {
+                            loader: 'babel-loader',
+                            options: babel,
+                        }
+                    }
+                ]
+            },
+            devtool: sourceMaps ? 'eval-source-map' : undefined,
+        }, (err, stats) => {
+            if (err) {
+                reject(err)
+            } else if (stats.hasErrors()) {
+                logger.error(stats.toString({colors: true}));
+                reject('stats error');
+            } else {
+                resolve();
+            }
         });
     });
 
