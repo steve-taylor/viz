@@ -4,6 +4,7 @@ const fsExtra = require('fs-extra');
 const browserify = require('browserify');
 const envify = require('envify/custom');
 const recursive = require('recursive-readdir');
+const realpathify = require('realpathify');
 
 const logger = require('./logger');
 
@@ -48,6 +49,7 @@ module.exports = async function compileTests({
             extensions,
             debug: sourceMaps,
         })
+            .plugin(realpathify)
             .transform('babelify', {
                 ...babel,
                 global: true,
