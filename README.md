@@ -4,7 +4,6 @@ Visual regression testing framework. Works with all web frameworks.
 
 [![npm version](https://img.shields.io/npm/v/viz.svg?style=flat)](https://www.npmjs.com/package/viz)
 ![npm](https://img.shields.io/npm/dw/viz.svg)
-![Build Status](https://github.com/steve-taylor/viz/actions/workflows/publish/badge.svg)
 
 ## Quick start
 
